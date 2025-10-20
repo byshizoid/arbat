@@ -1,0 +1,2117 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>УГИБДД АРБАТ - Компактный отчет</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 10px;
+            color: #333;
+            font-size: 12px;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+        
+        .points-system {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        .points-rules {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .points-rule {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid;
+        }
+        
+        .stat-card.evacuations { border-left-color: #e74c3c; }
+        .stat-card.fines { border-left-color: #f39c12; }
+        .stat-card.arrests { border-left-color: #27ae60; }
+        .stat-card.points { border-left-color: #9b59b6; }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card.evacuations .stat-number { color: #e74c3c; }
+        .stat-card.fines .stat-number { color: #f39c12; }
+        .stat-card.arrests .stat-number { color: #27ae60; }
+        .stat-card.points .stat-number { color: #9b59b6; }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid;
+            font-weight: 700;
+        }
+        
+        .section-title.evacuations { border-bottom-color: #e74c3c; }
+        .section-title.fines { border-bottom-color: #f39c12; }
+        .section-title.arrests { border-bottom-color: #27ae60; }
+        .section-title.overall { border-bottom-color: #9b59b6; }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .category-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .category-title {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .employee-list {
+            display: grid;
+            gap: 5px;
+        }
+        
+        .employee-row {
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 3px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .employee-row:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        }
+        
+        .employee-row.evacuations { border-left-color: #e74c3c; }
+        .employee-row.fines { border-left-color: #f39c12; }
+        .employee-row.arrests { border-left-color: #27ae60; }
+        
+        .employee-row.top-3 {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+            border-left-width: 4px;
+        }
+        
+        .employee-row.top-1 {
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffffff 100%);
+            border-left-width: 5px;
+        }
+        
+        .employee-info {
+            flex: 1;
+        }
+        
+        .employee-position {
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+        
+        .employee-name {
+            font-size: 0.75em;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .employee-values {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+        
+        .employee-value {
+            background: #3498db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9em;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .employee-points {
+            background: #9b59b6;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.7em;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .employee-row.evacuations .employee-value { background: #e74c3c; }
+        .employee-row.fines .employee-value { background: #f39c12; }
+        .employee-row.arrests .employee-value { background: #27ae60; }
+        
+        .rank-badge {
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .rank-badge.top-1 {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .rank-badge.top-3 {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .overall-ranking {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .overall-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        
+        .overall-row {
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 3px solid #9b59b6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .overall-row.top-3 {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+            border-left-width: 4px;
+        }
+        
+        .overall-row.top-1 {
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffffff 100%);
+            border-left-width: 5px;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8em;
+        }
+        
+        @media (max-width: 1200px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .points-rules {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>УГИБДД АРБАТ</h1>
+            <div class="subtitle">Компактный отчет с системой баллов</div>
+        </div>
+        
+        <div class="points-system">
+            <div class="points-rules">
+                <div class="points-rule">🚗 1 Эвакуация = 3 балла</div>
+                <div class="points-rule">💰 1 Штраф = 2 балла</div>
+                <div class="points-rule">👮 1 Арест = 3 балла</div>
+            </div>
+        </div>
+        
+        <div class="stats-overview">
+            
+    <div class="stat-card evacuations">
+        <div class="stat-number">209</div>
+        <div class="stat-label">Эвакуации</div>
+    </div>
+    <div class="stat-card fines">
+        <div class="stat-number">589</div>
+        <div class="stat-label">Штрафы</div>
+    </div>
+    <div class="stat-card arrests">
+        <div class="stat-number">344</div>
+        <div class="stat-label">Аресты</div>
+    </div>
+    <div class="stat-card points">
+        <div class="stat-number">2837</div>
+        <div class="stat-label">Всего баллов</div>
+    </div>
+    
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title overall">Общий рейтинг по баллам</h2>
+                <div class="overall-ranking">
+                    <div class="overall-grid">
+                        
+        <div class="overall-row top-1">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge top-1">#1</span>
+                <div>
+                    <div class="employee-position">1 СБ</div>
+                    <div class="employee-name">Михаил Маер</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">580</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row top-3">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge top-3">#2</span>
+                <div>
+                    <div class="employee-position">Ком. 1 СБ</div>
+                    <div class="employee-name">Вадим Прайс</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">208</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row top-3">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge top-3">#3</span>
+                <div>
+                    <div class="employee-position">Зам.Ком. ЦСН</div>
+                    <div class="employee-name">Виктор Куертович</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">182</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#4</span>
+                <div>
+                    <div class="employee-position">2 СБ</div>
+                    <div class="employee-name">Алексей Жиндеев</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">181</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#5</span>
+                <div>
+                    <div class="employee-position">Константин Дмитриевич</div>
+                    <div class="employee-name"></div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">179</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#6</span>
+                <div>
+                    <div class="employee-position">2 СБ</div>
+                    <div class="employee-name">Дмитрий Петров</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">160</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#7</span>
+                <div>
+                    <div class="employee-position">Зам.Ком. 1 СБ</div>
+                    <div class="employee-name">Данила Филатов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">128</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#8</span>
+                <div>
+                    <div class="employee-position">Инспектор ЦСН</div>
+                    <div class="employee-name">Владимир Дегтярев</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">100</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#9</span>
+                <div>
+                    <div class="employee-position">Зам. Нач. УГИБДД</div>
+                    <div class="employee-name">Виктор Килла</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">95</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#10</span>
+                <div>
+                    <div class="employee-position">Зам. Нач. АГИБДД</div>
+                    <div class="employee-name">М. Венгалби</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">89</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#11</span>
+                <div>
+                    <div class="employee-position">Инст. АГИБДД</div>
+                    <div class="employee-name">Никита Хрущёв</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">88</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#12</span>
+                <div>
+                    <div class="employee-position">Инспектор ЦСН</div>
+                    <div class="employee-name">Максим Сахаров</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">83</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#13</span>
+                <div>
+                    <div class="employee-position">Зам. Нач. ОСБ</div>
+                    <div class="employee-name">Богдан Ненужный</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">81</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#14</span>
+                <div>
+                    <div class="employee-position">Инст. АГИБДД</div>
+                    <div class="employee-name">Алексей Иванов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">73</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#15</span>
+                <div>
+                    <div class="employee-position">Smax</div>
+                    <div class="employee-name"></div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">73</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#16</span>
+                <div>
+                    <div class="employee-position">Инст. АГИБДД</div>
+                    <div class="employee-name">М. Колибри</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">66</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#17</span>
+                <div>
+                    <div class="employee-position">Ст.Инст. АГИБДД</div>
+                    <div class="employee-name">А.Первозванный</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">49</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#18</span>
+                <div>
+                    <div class="employee-position">1 СБ</div>
+                    <div class="employee-name">Владислав Карташов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">39</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#19</span>
+                <div>
+                    <div class="employee-position">2 СБ</div>
+                    <div class="employee-name">Ёгас Шавухин</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">39</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#20</span>
+                <div>
+                    <div class="employee-position">Инст АГИБДД</div>
+                    <div class="employee-name">Г. Беруашвили</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">32</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#21</span>
+                <div>
+                    <div class="employee-position">2 СБ</div>
+                    <div class="employee-name">Анатолий Постебайло</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">30</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#22</span>
+                <div>
+                    <div class="employee-position">1 СБ</div>
+                    <div class="employee-name">Сергей Черных</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">28</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#23</span>
+                <div>
+                    <div class="employee-position">Зам. Ком. ЦСН</div>
+                    <div class="employee-name">Андрей Белоусов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">27</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#24</span>
+                <div>
+                    <div class="employee-position">1 СБ</div>
+                    <div class="employee-name">Артём Прайд</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">24</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#25</span>
+                <div>
+                    <div class="employee-position">2 СБ</div>
+                    <div class="employee-name">Арсений Медведев</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">24</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#26</span>
+                <div>
+                    <div class="employee-position">ОСБ</div>
+                    <div class="employee-name">Сергей Бикет</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">24</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#27</span>
+                <div>
+                    <div class="employee-position">Нач. МТО</div>
+                    <div class="employee-name">Максим Кузьмин</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">23</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#28</span>
+                <div>
+                    <div class="employee-position">Инспектор ЦСН</div>
+                    <div class="employee-name">С. Волковских</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">23</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#29</span>
+                <div>
+                    <div class="employee-position">2 СБ</div>
+                    <div class="employee-name">Илья Секретов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">22</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#30</span>
+                <div>
+                    <div class="employee-position">Ком. ЦСН</div>
+                    <div class="employee-name">Камиль Гасанов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">19</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#31</span>
+                <div>
+                    <div class="employee-position">Начальник ОСБ</div>
+                    <div class="employee-name">Денис Курчатов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">15</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#32</span>
+                <div>
+                    <div class="employee-position">Инспектор ЦСН</div>
+                    <div class="employee-name">Роман Волковских</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">13</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#33</span>
+                <div>
+                    <div class="employee-position">Зам.Ком. 2 СБ</div>
+                    <div class="employee-name">Артем Орешников</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">12</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#34</span>
+                <div>
+                    <div class="employee-position">Ст. Инсп. 1 СБ</div>
+                    <div class="employee-name">Сергей Астахов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">11</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#35</span>
+                <div>
+                    <div class="employee-position">Ком. 2 СБ</div>
+                    <div class="employee-name">Николай Потрошенко</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">9</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#36</span>
+                <div>
+                    <div class="employee-position">1 СБ</div>
+                    <div class="employee-name">Юпитер Ангелов</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">3</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#37</span>
+                <div>
+                    <div class="employee-position">Инспектор ЦСН</div>
+                    <div class="employee-name">Давед Капоне</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">3</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+        <div class="overall-row ">
+            <div style="display: flex; align-items: center;">
+                <span class="rank-badge ">#38</span>
+                <div>
+                    <div class="employee-position">2 СБ</div>
+                    <div class="employee-name">Роман Верховный</div>
+                </div>
+            </div>
+            <div class="employee-values">
+                <div class="employee-value">2</div>
+                <div class="employee-points">баллов</div>
+            </div>
+        </div>
+        
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Результаты по категориям</h2>
+                <div class="categories-grid">
+                    
+        <div class="category-section">
+            <h3 class="category-title">Эвакуации (20)</h3>
+            <div class="employee-list">
+        
+            <div class="employee-row evacuations top-1">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-1">#1</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Константин Дмитриевич</div>
+                        <div class="employee-name"></div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">46</div>
+                    <div class="employee-points">138</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations top-3">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-3">#2</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ком. 1 СБ</div>
+                        <div class="employee-name">Вадим Прайс</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">32</div>
+                    <div class="employee-points">96</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations top-3">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-3">#3</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам. Нач. УГИБДД</div>
+                        <div class="employee-name">Виктор Килла</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">29</div>
+                    <div class="employee-points">87</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#4</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам. Нач. ОСБ</div>
+                        <div class="employee-name">Богдан Ненужный</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">27</div>
+                    <div class="employee-points">81</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#5</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам. Нач. АГИБДД</div>
+                        <div class="employee-name">М. Венгалби</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">13</div>
+                    <div class="employee-points">39</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#6</span>
+                    <div class="employee-info">
+                        <div class="employee-position">1 СБ</div>
+                        <div class="employee-name">Владислав Карташов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">11</div>
+                    <div class="employee-points">33</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#7</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст. АГИБДД</div>
+                        <div class="employee-name">М. Колибри</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">10</div>
+                    <div class="employee-points">30</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#8</span>
+                    <div class="employee-info">
+                        <div class="employee-position">1 СБ</div>
+                        <div class="employee-name">Михаил Маер</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">9</div>
+                    <div class="employee-points">27</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#9</span>
+                    <div class="employee-info">
+                        <div class="employee-position">1 СБ</div>
+                        <div class="employee-name">Артём Прайд</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">8</div>
+                    <div class="employee-points">24</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#10</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Ёгас Шавухин</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">7</div>
+                    <div class="employee-points">21</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#11</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам.Ком. ЦСН</div>
+                        <div class="employee-name">Виктор Куертович</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">4</div>
+                    <div class="employee-points">12</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#12</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам.Ком. 1 СБ</div>
+                        <div class="employee-name">Данила Филатов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">4</div>
+                    <div class="employee-points">12</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#13</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ком. 2 СБ</div>
+                        <div class="employee-name">Николай Потрошенко</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#14</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст АГИБДД</div>
+                        <div class="employee-name">Г. Беруашвили</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#15</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Алексей Жиндеев</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#16</span>
+                    <div class="employee-info">
+                        <div class="employee-position">1 СБ</div>
+                        <div class="employee-name">Юпитер Ангелов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#17</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Начальник ОСБ</div>
+                        <div class="employee-name">Денис Курчатов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#18</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Илья Секретов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#19</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Нач. МТО</div>
+                        <div class="employee-name">Максим Кузьмин</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row evacuations ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#20</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст. АГИБДД</div>
+                        <div class="employee-name">Алексей Иванов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+        
+        <div class="category-section">
+            <h3 class="category-title">Штрафы (31)</h3>
+            <div class="employee-list">
+        
+            <div class="employee-row fines top-1">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-1">#1</span>
+                    <div class="employee-info">
+                        <div class="employee-position">1 СБ</div>
+                        <div class="employee-name">Михаил Маер</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">143</div>
+                    <div class="employee-points">286</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines top-3">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-3">#2</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Дмитрий Петров</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">56</div>
+                    <div class="employee-points">112</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines top-3">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-3">#3</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Алексей Жиндеев</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">56</div>
+                    <div class="employee-points">112</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#4</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст. АГИБДД</div>
+                        <div class="employee-name">Никита Хрущёв</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">35</div>
+                    <div class="employee-points">70</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#5</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам.Ком. 1 СБ</div>
+                        <div class="employee-name">Данила Филатов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">34</div>
+                    <div class="employee-points">68</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#6</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам.Ком. ЦСН</div>
+                        <div class="employee-name">Виктор Куертович</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">34</div>
+                    <div class="employee-points">68</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#7</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ком. 1 СБ</div>
+                        <div class="employee-name">Вадим Прайс</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">29</div>
+                    <div class="employee-points">58</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#8</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Smax</div>
+                        <div class="employee-name"></div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">23</div>
+                    <div class="employee-points">46</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#9</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ст.Инст. АГИБДД</div>
+                        <div class="employee-name">А.Первозванный</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">23</div>
+                    <div class="employee-points">46</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#10</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст. АГИБДД</div>
+                        <div class="employee-name">Алексей Иванов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">17</div>
+                    <div class="employee-points">34</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#11</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст. АГИБДД</div>
+                        <div class="employee-name">М. Колибри</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">15</div>
+                    <div class="employee-points">30</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#12</span>
+                    <div class="employee-info">
+                        <div class="employee-position">1 СБ</div>
+                        <div class="employee-name">Сергей Черных</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">14</div>
+                    <div class="employee-points">28</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#13</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">Владимир Дегтярев</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">14</div>
+                    <div class="employee-points">28</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#14</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Анатолий Постебайло</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">12</div>
+                    <div class="employee-points">24</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#15</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст АГИБДД</div>
+                        <div class="employee-name">Г. Беруашвили</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">10</div>
+                    <div class="employee-points">20</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#16</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">Максим Сахаров</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">10</div>
+                    <div class="employee-points">20</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#17</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Арсений Медведев</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">9</div>
+                    <div class="employee-points">18</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#18</span>
+                    <div class="employee-info">
+                        <div class="employee-position">ОСБ</div>
+                        <div class="employee-name">Сергей Бикет</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">9</div>
+                    <div class="employee-points">18</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#19</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Илья Секретов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">8</div>
+                    <div class="employee-points">16</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#20</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Константин Дмитриевич</div>
+                        <div class="employee-name"></div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">7</div>
+                    <div class="employee-points">14</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#21</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Ёгас Шавухин</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">6</div>
+                    <div class="employee-points">12</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#22</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Нач. МТО</div>
+                        <div class="employee-name">Максим Кузьмин</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">4</div>
+                    <div class="employee-points">8</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#23</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">С. Волковских</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">4</div>
+                    <div class="employee-points">8</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#24</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам. Нач. АГИБДД</div>
+                        <div class="employee-name">М. Венгалби</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">4</div>
+                    <div class="employee-points">8</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#25</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Начальник ОСБ</div>
+                        <div class="employee-name">Денис Курчатов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">3</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#26</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам.Ком. 2 СБ</div>
+                        <div class="employee-name">Артем Орешников</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">3</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#27</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ком. ЦСН</div>
+                        <div class="employee-name">Камиль Гасанов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">4</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#28</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">Роман Волковских</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">4</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#29</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ст. Инсп. 1 СБ</div>
+                        <div class="employee-name">Сергей Астахов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">2</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#30</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Роман Верховный</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">2</div>
+                </div>
+            </div>
+            
+            <div class="employee-row fines ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#31</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам. Нач. УГИБДД</div>
+                        <div class="employee-name">Виктор Килла</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">2</div>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+        
+        <div class="category-section">
+            <h3 class="category-title">Аресты (33)</h3>
+            <div class="employee-list">
+        
+            <div class="employee-row arrests top-1">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-1">#1</span>
+                    <div class="employee-info">
+                        <div class="employee-position">1 СБ</div>
+                        <div class="employee-name">Михаил Маер</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">89</div>
+                    <div class="employee-points">267</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests top-3">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-3">#2</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам.Ком. ЦСН</div>
+                        <div class="employee-name">Виктор Куертович</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">34</div>
+                    <div class="employee-points">102</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests top-3">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge top-3">#3</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">Владимир Дегтярев</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">24</div>
+                    <div class="employee-points">72</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#4</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Алексей Жиндеев</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">22</div>
+                    <div class="employee-points">66</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#5</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">Максим Сахаров</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">21</div>
+                    <div class="employee-points">63</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#6</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ком. 1 СБ</div>
+                        <div class="employee-name">Вадим Прайс</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">18</div>
+                    <div class="employee-points">54</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#7</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам.Ком. 1 СБ</div>
+                        <div class="employee-name">Данила Филатов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">16</div>
+                    <div class="employee-points">48</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#8</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Дмитрий Петров</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">16</div>
+                    <div class="employee-points">48</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#9</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам. Нач. АГИБДД</div>
+                        <div class="employee-name">М. Венгалби</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">14</div>
+                    <div class="employee-points">42</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#10</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст. АГИБДД</div>
+                        <div class="employee-name">Алексей Иванов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">12</div>
+                    <div class="employee-points">36</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#11</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Smax</div>
+                        <div class="employee-name"></div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">9</div>
+                    <div class="employee-points">27</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#12</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Константин Дмитриевич</div>
+                        <div class="employee-name"></div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">9</div>
+                    <div class="employee-points">27</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#13</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам. Ком. ЦСН</div>
+                        <div class="employee-name">Андрей Белоусов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">9</div>
+                    <div class="employee-points">27</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#14</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст. АГИБДД</div>
+                        <div class="employee-name">Никита Хрущёв</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">6</div>
+                    <div class="employee-points">18</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#15</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ком. ЦСН</div>
+                        <div class="employee-name">Камиль Гасанов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">5</div>
+                    <div class="employee-points">15</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#16</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">С. Волковских</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">5</div>
+                    <div class="employee-points">15</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#17</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Нач. МТО</div>
+                        <div class="employee-name">Максим Кузьмин</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">4</div>
+                    <div class="employee-points">12</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#18</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст АГИБДД</div>
+                        <div class="employee-name">Г. Беруашвили</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">3</div>
+                    <div class="employee-points">9</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#19</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">Роман Волковских</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">3</div>
+                    <div class="employee-points">9</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#20</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ст. Инсп. 1 СБ</div>
+                        <div class="employee-name">Сергей Астахов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">3</div>
+                    <div class="employee-points">9</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#21</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Ёгас Шавухин</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#22</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Анатолий Постебайло</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#23</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам.Ком. 2 СБ</div>
+                        <div class="employee-name">Артем Орешников</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#24</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инст. АГИБДД</div>
+                        <div class="employee-name">М. Колибри</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#25</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Начальник ОСБ</div>
+                        <div class="employee-name">Денис Курчатов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#26</span>
+                    <div class="employee-info">
+                        <div class="employee-position">ОСБ</div>
+                        <div class="employee-name">Сергей Бикет</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#27</span>
+                    <div class="employee-info">
+                        <div class="employee-position">1 СБ</div>
+                        <div class="employee-name">Владислав Карташов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#28</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Арсений Медведев</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#29</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Зам. Нач. УГИБДД</div>
+                        <div class="employee-name">Виктор Килла</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">2</div>
+                    <div class="employee-points">6</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#30</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ст.Инст. АГИБДД</div>
+                        <div class="employee-name">А.Первозванный</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#31</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Инспектор ЦСН</div>
+                        <div class="employee-name">Давед Капоне</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#32</span>
+                    <div class="employee-info">
+                        <div class="employee-position">Ком. 2 СБ</div>
+                        <div class="employee-name">Николай Потрошенко</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            <div class="employee-row arrests ">
+                <div style="display: flex; align-items: center;">
+                    <span class="rank-badge ">#33</span>
+                    <div class="employee-info">
+                        <div class="employee-position">2 СБ</div>
+                        <div class="employee-name">Илья Секретов</div>
+                    </div>
+                </div>
+                <div class="employee-values">
+                    <div class="employee-value">1</div>
+                    <div class="employee-points">3</div>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+        
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Отчет сгенерирован автоматически | УГИБДД АРБАТ</p>
+        </div>
+    </div>
+</body>
+</html>
+        
